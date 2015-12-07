@@ -4,7 +4,7 @@
 #include "Filters.h"
 #include "Noise.h"
 #include "Histogram.h"
-
+#include "Morphology.h"
 
 using namespace cv;
 
@@ -12,6 +12,7 @@ int const HISTOGRAM_EQUALIZATION_CHANNEL = 1;
 int const MATCHING_CHANNEL = 2;
 int const FILTER_CHANNEL = 3;
 int const NOISE_CHANNEL = 4;
+int const MORPHOLOGY_CHANNEL = 5;
 int const EXIT_CHANNEL = -1;
 
 int const LENA_INDEX = 1;
@@ -19,6 +20,8 @@ int const White_BEAN_INDEX = 2;
 int const GRAY_BEAN_INDEX = 3;
 int const BLACK_BEAN_INDEX = 4;
 int const PEPERSALT_INDEX = 5;
+int const NOISETEST_INDEX = 6;
+int const MORPHOLOGY_INDEX = 7;
 
 Mat LoadImage(bool bShowMessage, string strTitle = "", bool bClearView = false){
 
@@ -34,6 +37,8 @@ Mat LoadImage(bool bShowMessage, string strTitle = "", bool bClearView = false){
 		printf("3.Gray Beam\n");
 		printf("4.Black Beam\n");
 		printf("5.Pepersalt\n");
+		printf("6.NoiseTestImage\n");
+		printf("7.MorphologyTestImage\n");
 		printf("*************************\n");
 	}
 
@@ -65,6 +70,16 @@ Mat LoadImage(bool bShowMessage, string strTitle = "", bool bClearView = false){
 		Mat clsImage = imread("Pepersalt.bmp", cv::IMREAD_GRAYSCALE);
 		return clsImage;
 	}
+	else if (iInput == NOISETEST_INDEX)
+	{
+		Mat clsImage = imread("NoiseTestImage.bmp", cv::IMREAD_GRAYSCALE);
+		return clsImage;
+	}
+	else if (iInput == MORPHOLOGY_INDEX)
+	{
+		Mat clsImage = imread("MorphologyTestImage.bmp", cv::IMREAD_GRAYSCALE);
+		return clsImage;
+	}
 	else
 	{
 		Mat clsImage = Mat::zeros(128, 128, CV_8UC1);
@@ -79,6 +94,7 @@ int Menu()
 	printf("2.Matching\n");
 	printf("3.Filter\n");
 	printf("4.Noise\n");
+	printf("5.Morphology\n");
 	printf("*************************\n");
 
 	int iInput = 999;
@@ -276,6 +292,23 @@ void main(){
 			clsFilterHistogram.GetImageHistogram(clsFilterImage, iFilterHistogramArray);
 			clsFilterHistogram.DrawHistogram("FilterHistogram", clsFilterHistogramImage, iFilterHistogramArray, 0.05, true);
 
+			break;
+		}
+
+		else if (iSelectIndex == MORPHOLOGY_CHANNEL)
+		{
+			Mat clsSouceImage = LoadImage(true, "Select SouceImage", true);
+			Mat clsResultImage = Mat::zeros(Size(clsSouceImage.cols, clsSouceImage.rows), CV_8UC1);
+
+			Morphology clsMorphology;
+			clsMorphology.Thersholding(clsSouceImage, clsSouceImage, 127);
+			for (size_t i = 0; i < 10; i++)
+			{
+				clsMorphology.Closing(clsSouceImage, clsResultImage);
+			}
+
+			imshow("SouceImage", clsSouceImage);
+			imshow("ResultImage", clsResultImage);
 			break;
 		}
 	} while (true);

@@ -33,6 +33,9 @@
     <ClCompile Include="Histogram.cpp">
       <Filter>資源檔</Filter>
     </ClCompile>
+    <ClCompile Include="Morphology.cpp">
+      <Filter>資源檔</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Filters.h">
@@ -48,6 +51,9 @@
       <Filter>標頭檔</Filter>
     </ClInclude>
     <ClInclude Include="Histogram.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="Morphology.h">
       <Filter>標頭檔</Filter>
     </ClInclude>
   </ItemGroup>

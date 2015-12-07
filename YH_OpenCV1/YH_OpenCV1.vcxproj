@@ -86,6 +86,7 @@
     <ClCompile Include="Filters.cpp" />
     <ClCompile Include="Histogram.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Morphology.cpp" />
     <ClCompile Include="Noise.cpp" />
     <ClCompile Include="Sort.cpp" />
   </ItemGroup>
@@ -93,6 +94,7 @@
     <ClInclude Include="Filters.h" />
     <ClInclude Include="AdvanceMath.h" />
     <ClInclude Include="Histogram.h" />
+    <ClInclude Include="Morphology.h" />
     <ClInclude Include="Noise.h" />
     <ClInclude Include="Sort.h" />
   </ItemGroup>
