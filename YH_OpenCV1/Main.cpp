@@ -126,7 +126,7 @@ void main(){
 
 			int iArrayCol = clsSouceImage.cols;
 			int iArrayRow = clsSouceImage.rows;
-			
+
 			Histogram clsHistogram;
 
 			std::array<int, 256> iSouceHistogramArray;
@@ -218,7 +218,7 @@ void main(){
 				eFilterKind = Filters::FilterKind::SolbeY;
 				break;
 			default:
-				eFilterKind = Filters::FilterKind::BoxFilter;				
+				eFilterKind = Filters::FilterKind::BoxFilter;
 				break;
 			}
 
@@ -234,7 +234,7 @@ void main(){
 			Mat clsSouceImage = LoadImage(true, "Select SouceImage", true);
 			Mat clsResultImage = Mat::zeros(Size(clsSouceImage.cols, clsSouceImage.rows), CV_8UC1);
 
-			system("CLS"); 
+			system("CLS");
 			printf("Noise Kind\n");
 			printf("*************************\n");
 			printf("1.Gaussian\n");
@@ -264,7 +264,7 @@ void main(){
 				break;
 			}
 			Noise clsNoiseAdditor;
-			clsNoiseAdditor.SetGaussainPoroperties(0, 3 );
+			clsNoiseAdditor.SetGaussainPoroperties(0, 3);
 			clsNoiseAdditor.AddNoise(eNoiseKind, clsSouceImage, clsResultImage);
 
 			Histogram clsSourceHistogram;
@@ -283,7 +283,7 @@ void main(){
 			imshow("NoiseResult", clsResultImage);
 
 			Mat clsFilterImage = Mat::zeros(Size(clsSouceImage.cols, clsSouceImage.rows), CV_8UC1);
-			Filters::FilterProcess(Filters::FilterKind::AdaptiveMedianFilter,clsResultImage, clsFilterImage);
+			Filters::FilterProcess(Filters::FilterKind::AdaptiveMedianFilter, clsResultImage, clsFilterImage);
 			imshow("FiltedImage", clsFilterImage);
 
 			Histogram clsFilterHistogram;
@@ -298,17 +298,23 @@ void main(){
 		else if (iSelectIndex == MORPHOLOGY_CHANNEL)
 		{
 			Mat clsSouceImage = LoadImage(true, "Select SouceImage", true);
-			Mat clsResultImage = Mat::zeros(Size(clsSouceImage.cols, clsSouceImage.rows), CV_8UC1);
+			Mat clsDilationImage = Mat::zeros(Size(clsSouceImage.cols, clsSouceImage.rows), CV_8UC1);
+			Mat clsErosiontImage = Mat::zeros(Size(clsSouceImage.cols, clsSouceImage.rows), CV_8UC1);
+			Mat clsOpeningImage = Mat::zeros(Size(clsSouceImage.cols, clsSouceImage.rows), CV_8UC1);
+			Mat clsClosingImage = Mat::zeros(Size(clsSouceImage.cols, clsSouceImage.rows), CV_8UC1);
 
 			Morphology clsMorphology;
 			clsMorphology.Thersholding(clsSouceImage, clsSouceImage, 127);
-			for (size_t i = 0; i < 10; i++)
-			{
-				clsMorphology.Closing(clsSouceImage, clsResultImage);
-			}
+			clsMorphology.Dilation(clsSouceImage, clsDilationImage);
+			clsMorphology.Erosion(clsSouceImage, clsErosiontImage);
+			clsMorphology.Opening(clsSouceImage, clsOpeningImage);
+			clsMorphology.Closing(clsSouceImage, clsClosingImage);
 
 			imshow("SouceImage", clsSouceImage);
-			imshow("ResultImage", clsResultImage);
+			imshow("Dilation", clsDilationImage);
+			imshow("Erosion", clsSouceImage);
+			imshow("Opening", clsOpeningImage);
+			imshow("Closing", clsClosingImage);
 			break;
 		}
 	} while (true);

@@ -1,4 +1,4 @@
-﻿Build started 2015/12/7 下午 05:06:28.
+﻿Build started 2015/12/15 下午 06:17:10.
      1>Project "D:\Program\YH_OpenCV2\YH_OpenCV1\YH_OpenCV1.vcxproj" on node 2 (Build target(s)).
      1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V120\Microsoft.CppBuild.targets(381,5): warning MSB8028: The intermediate directory (Debug\) contains files shared from another project (YH_OpenCV1.vcxproj).  This can lead to incorrect clean and rebuild behavior.
      1>ClCompile:
@@ -22,4 +22,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:00.79
+Time Elapsed 00:00:03.83
