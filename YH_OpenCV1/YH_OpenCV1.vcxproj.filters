@@ -36,6 +36,24 @@
     <ClCompile Include="Morphology.cpp">
       <Filter>資源檔</Filter>
     </ClCompile>
+    <ClCompile Include="myFeatureExtractor.cpp">
+      <Filter>資源檔</Filter>
+    </ClCompile>
+    <ClCompile Include="myLBP\myLBP.cpp">
+      <Filter>資源檔</Filter>
+    </ClCompile>
+    <ClCompile Include="myHOG\myHOG.cpp">
+      <Filter>資源檔</Filter>
+    </ClCompile>
+    <ClCompile Include="DIPKernel\DIPKernel.cpp">
+      <Filter>資源檔</Filter>
+    </ClCompile>
+    <ClCompile Include="myImageSequence.cpp">
+      <Filter>資源檔</Filter>
+    </ClCompile>
+    <ClCompile Include="Thresholding.cpp">
+      <Filter>資源檔</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Filters.h">
@@ -54,6 +72,24 @@
       <Filter>標頭檔</Filter>
     </ClInclude>
     <ClInclude Include="Morphology.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="myFeatureExtractor.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="myHOG\myHOG.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="myLBP\myLBP.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="DIPKernel\DIPKernel.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="myImageSequence.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="Thresholding.h">
       <Filter>標頭檔</Filter>
     </ClInclude>
   </ItemGroup>

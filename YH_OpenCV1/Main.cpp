@@ -1,10 +1,13 @@
-#include <opencv2\highgui\highgui.hpp>
+#include <opencv2/opencv.hpp>
 #include <math.h>
 #include <array>
 #include "Filters.h"
 #include "Noise.h"
 #include "Histogram.h"
 #include "Morphology.h"
+#include "Thresholding.h"
+#include "myFeatureExtractor.h"
+#include "myImageSequence.h"
 
 using namespace cv;
 
@@ -13,6 +16,7 @@ int const MATCHING_CHANNEL = 2;
 int const FILTER_CHANNEL = 3;
 int const NOISE_CHANNEL = 4;
 int const MORPHOLOGY_CHANNEL = 5;
+int const THRESHOLDING_CHANNEL = 6;
 int const EXIT_CHANNEL = -1;
 
 int const LENA_INDEX = 1;
@@ -22,6 +26,7 @@ int const BLACK_BEAN_INDEX = 4;
 int const PEPERSALT_INDEX = 5;
 int const NOISETEST_INDEX = 6;
 int const MORPHOLOGY_INDEX = 7;
+
 
 Mat LoadImage(bool bShowMessage, string strTitle = "", bool bClearView = false){
 
@@ -95,6 +100,7 @@ int Menu()
 	printf("3.Filter\n");
 	printf("4.Noise\n");
 	printf("5.Morphology\n");
+	printf("6.Thresholding\n");
 	printf("*************************\n");
 
 	int iInput = 999;
@@ -104,10 +110,10 @@ int Menu()
 }
 
 void main(){
-
 	int iSelectIndex = 0;
 	do
 	{
+		//break;
 		iSelectIndex = Menu();
 
 		if (iSelectIndex == EXIT_CHANNEL)
@@ -223,7 +229,6 @@ void main(){
 			}
 
 			Filters::FilterProcess(eFilterKind, clsSouceImage, clsResultImage);
-
 			imshow("SouceImage", clsSouceImage);
 			imshow("FilterResult", clsResultImage);
 
@@ -303,22 +308,90 @@ void main(){
 			Mat clsOpeningImage = Mat::zeros(Size(clsSouceImage.cols, clsSouceImage.rows), CV_8UC1);
 			Mat clsClosingImage = Mat::zeros(Size(clsSouceImage.cols, clsSouceImage.rows), CV_8UC1);
 
+			Thresholding clsThresholding;
 			Morphology clsMorphology;
-			clsMorphology.Thersholding(clsSouceImage, clsSouceImage, 127);
+			std::vector<Rect> clsPointsList;
+			clsMorphology.ConnectComponent(clsSouceImage, clsPointsList,false);
+			for (size_t i = 0; i < clsPointsList.size(); i++)
+			{
+				Mat imgPanel = clsSouceImage.clone();
+				Mat imgPanelRoi(imgPanel, clsPointsList[i]);
+				clsSouceImage.copyTo(imgPanelRoi);
+
+				imshow(""+i, imgPanel);
+
+				/*Mat temp = clsSouceImage.clone();
+				Mat srcROI = clsSouceImage(clsPointsList[i]);
+				temp.copyTo(srcROI);
+				imshow(""+i, srcROI);*/
+			}
+
+			clsThresholding.NomalThersholding(clsSouceImage, clsSouceImage, 127);
 			clsMorphology.Dilation(clsSouceImage, clsDilationImage);
 			clsMorphology.Erosion(clsSouceImage, clsErosiontImage);
 			clsMorphology.Opening(clsSouceImage, clsOpeningImage);
 			clsMorphology.Closing(clsSouceImage, clsClosingImage);
 
 			imshow("SouceImage", clsSouceImage);
-			imshow("Dilation", clsDilationImage);
-			imshow("Erosion", clsSouceImage);
-			imshow("Opening", clsOpeningImage);
-			imshow("Closing", clsClosingImage);
+			//imshow("Dilation", clsDilationImage);
+			//imshow("Erosion", clsSouceImage);
+			//imshow("Opening", clsOpeningImage);
+			//imshow("Closing", clsClosingImage);
+			break;
+		}
+
+		else if (iSelectIndex == THRESHOLDING_CHANNEL)
+		{
+			Mat clsSouceImage = LoadImage(true, "Select SouceImage", true);
+			Mat clsResultImage = Mat::zeros(Size(clsSouceImage.cols, clsSouceImage.rows), CV_8UC1);
+
+			Thresholding clsThresholding;
+			clsThresholding.OtsusThersholding(clsSouceImage, clsResultImage);
+
+			imshow("SouceImage", clsSouceImage);
+			imshow("ResultImage", clsResultImage);
 			break;
 		}
 	} while (true);
 
+
+
+	/*test Svm*/
+
+	myImageSequence clsImageSequence = myImageSequence("D:/test","","bmp", false);
+	clsImageSequence.SetAttribute(myImageSequence::Attribute::PADDING_LENGTH, 6);
+	cv::Mat mPositive;
+	std::vector<std::vector<float>> vvfPosFeture;
+	while (clsImageSequence >> mPositive)
+	{
+		myFeatureExtractor clsFeatureExtractor = myFeatureExtractor(mPositive);
+		clsFeatureExtractor.EnableFeature(myFeatureExtractor::Mode::LBP_FEATURE);
+		std::vector<float > vValue;
+		std::vector<float, std::allocator<float> > vfeature;
+		for (int i = 0; i < mPositive.rows; i++)
+		{
+			for (size_t j = 0; j < mPositive.cols; j++)
+			{
+				clsFeatureExtractor.Describe(j, i, vfeature);
+				for (auto value : vfeature)
+				{
+					vValue.push_back(value);
+				}
+			}
+		}
+		vvfPosFeture.push_back(vValue);
+	}
+
+	CvSVMParams params;
+	params.svm_type = CvSVM::C_SVC;
+	params.kernel_type = CvSVM::LINEAR;
+	params.term_crit = cvTermCriteria(CV_TERMCRIT_ITER, 100, 1e-6);
+
+	cv::SVM clsSvm;
+	//clsSvm.save("D:/XsML.xml");
+	//clsSvm.write)
+	//CvFileStorage clsSorge;
+	
 	cv::waitKey(0);
 
 }

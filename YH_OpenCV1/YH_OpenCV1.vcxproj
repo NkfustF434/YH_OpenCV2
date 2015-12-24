@@ -83,20 +83,32 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AdvanceMath.cpp" />
+    <ClCompile Include="DIPKernel\DIPKernel.cpp" />
     <ClCompile Include="Filters.cpp" />
     <ClCompile Include="Histogram.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Morphology.cpp" />
+    <ClCompile Include="myFeatureExtractor.cpp" />
+    <ClCompile Include="myHOG\myHOG.cpp" />
+    <ClCompile Include="myImageSequence.cpp" />
+    <ClCompile Include="myLBP\myLBP.cpp" />
     <ClCompile Include="Noise.cpp" />
     <ClCompile Include="Sort.cpp" />
+    <ClCompile Include="Thresholding.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="DIPKernel\DIPKernel.h" />
     <ClInclude Include="Filters.h" />
     <ClInclude Include="AdvanceMath.h" />
     <ClInclude Include="Histogram.h" />
     <ClInclude Include="Morphology.h" />
+    <ClInclude Include="myFeatureExtractor.h" />
+    <ClInclude Include="myHOG\myHOG.h" />
+    <ClInclude Include="myImageSequence.h" />
+    <ClInclude Include="myLBP\myLBP.h" />
     <ClInclude Include="Noise.h" />
     <ClInclude Include="Sort.h" />
+    <ClInclude Include="Thresholding.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

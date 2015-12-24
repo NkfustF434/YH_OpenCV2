@@ -1,21 +1,19 @@
 #include "Morphology.h"
 #include <stdlib.h>
+#include "Thresholding.h"
 
-void Morphology::Thersholding(Mat clsSouceImage, Mat& clsTargetImage, int iThersholding)
+bool Morphology::CheckIsBinary(Mat clsSouceImage)
 {
-	Mat clsTempImage = Mat::zeros(Size(clsSouceImage.cols, clsSouceImage.rows), CV_8UC1);
-	for (int iCol = 1; iCol < clsSouceImage.cols - 1; iCol++)
+	for (int iRow = 0; iRow < clsSouceImage.rows; iRow++)
 	{
-		for (int iRow = 1; iRow < clsSouceImage.rows - 1; iRow++)
+		for (int iCol = 0; iCol < clsSouceImage.cols; iCol++)
 		{
-
-			if (clsSouceImage.at<unsigned char>(iRow, iCol) > iThersholding)
-				clsTempImage.at<unsigned char>(iRow, iCol) = 255;
-			else
-				clsTempImage.at<unsigned char>(iRow, iCol) = 0;
+			if (clsSouceImage.at<unsigned char>(iRow, iCol) != 0 && clsSouceImage.at<unsigned char>(iRow, iCol) != 255)
+				return false;
 		}
 	}
-	clsTargetImage = clsTempImage.clone();
+
+	return true;
 }
 
 void Morphology::Dilation(Mat clsSouceImage, Mat& clsTargetImage, int iKernel[9])
@@ -32,10 +30,10 @@ void Morphology::Dilation(Mat clsSouceImage, Mat& clsTargetImage, int iKernel[9]
 				iKernel[iIndex] = 0;
 		}
 	}
-	
-	for (int iCol = 1; iCol < clsSouceImage.cols - 1; iCol++)
+
+	for (int iRow = 1; iRow < clsSouceImage.rows - 1; iRow++)
 	{
-		for (int iRow = 1; iRow < clsSouceImage.rows - 1; iRow++)
+		for (int iCol = 1; iCol < clsSouceImage.cols - 1; iCol++)
 		{
 			//Check image center 1 or 0
 			if (iKernel[4] != 0 && clsSouceImage.at<unsigned char>(iRow, iCol) == 255)
@@ -69,16 +67,16 @@ void Morphology::Erosion(Mat clsSouceImage, Mat& clsTargetImage, int iKernel[9])
 		iKernel = new int[9];
 		for (int iIndex = 0; iIndex < 9; iIndex++)
 		{
-			if (iIndex == 1 || iIndex == 3 || iIndex  == 4 || iIndex == 5 || iIndex == 7)
+			if (iIndex == 1 || iIndex == 3 || iIndex == 4 || iIndex == 5 || iIndex == 7)
 				iKernel[iIndex] = 1;
 			else
 				iKernel[iIndex] = 0;
 		}
 	}
 
-	for (int iCol = 1; iCol < clsSouceImage.cols - 1; iCol++)
+	for (int iRow = 1; iRow < clsSouceImage.rows - 1; iRow++)
 	{
-		for (int iRow = 1; iRow < clsSouceImage.rows - 1; iRow++)
+		for (int iCol = 1; iCol < clsSouceImage.cols - 1; iCol++)
 		{
 			//Check image center 1 or 0
 			if (iKernel[4] != 0 && clsSouceImage.at<unsigned char>(iRow, iCol) == 255)
@@ -124,4 +122,164 @@ void Morphology::Closing(Mat clsSouceImage, Mat& clsTargetImage, int iKernel[9])
 	Mat clsTemp = clsTargetImage.clone();
 	Dilation(clsSouceImage, clsTemp, iKernel);
 	Erosion(clsTemp, clsTargetImage, iKernel);
+}
+
+void Morphology::ConnectComponent(Mat clsSouceImage, std::vector<Rect>& clsRectsList, bool bPrint)
+{
+	Mat clsTempImage = clsSouceImage.clone();
+
+	int** iImageTable;
+	iImageTable = new int*[clsTempImage.rows];
+	for (int iRowIndex = 0; iRowIndex < clsTempImage.rows; iRowIndex++)
+	{
+		iImageTable[iRowIndex] = new int[clsTempImage.cols];
+	}
+
+	// check this image is binary
+	if (!CheckIsBinary(clsSouceImage))
+	{
+		Thresholding clsThresholding;
+		clsThresholding.OtsusThersholding(clsSouceImage, clsTempImage);
+	}
+
+	std::map<int, int> iRelationTable;
+	int iLebelIndex = 1;
+	for (int iRow = 0; iRow < clsTempImage.rows; iRow++)
+	{
+		for (int iCol = 0; iCol < clsTempImage.cols; iCol++)
+		{
+			if (clsTempImage.at<unsigned char>(iRow, iCol) != 0)
+			{
+				bool bNewLebel = true;
+				bool bTopRelation = false;
+				bool bLeftRelation = false;
+				int iMinLebel = iLebelIndex;
+
+				if (iRow != 0)
+				{
+					if (iImageTable[iRow - 1][iCol] != 0)
+					{
+						bTopRelation = true;
+						if (iImageTable[iRow - 1][iCol] < iMinLebel)
+						{
+							iMinLebel = iImageTable[iRow - 1][iCol];
+							bNewLebel = false;
+						}
+					}
+				}
+
+				if (iCol != 0)
+				{
+					if (iImageTable[iRow][iCol - 1] != 0)
+					{
+						bLeftRelation = true;
+						if (iImageTable[iRow][iCol - 1] < iMinLebel)
+						{
+							iMinLebel = iImageTable[iRow][iCol - 1];
+							bNewLebel = false;
+						}
+					}
+				}
+
+				//Check relation
+				if (bLeftRelation && bTopRelation)
+				{
+					if (iImageTable[iRow][iCol - 1] != iMinLebel)
+						iRelationTable[iImageTable[iRow][iCol - 1]] = iMinLebel;
+					else if (iImageTable[iRow - 1][iCol] != iMinLebel)
+						iRelationTable[iImageTable[iRow - 1][iCol]] = iMinLebel;
+				}
+
+				iImageTable[iRow][iCol] = iMinLebel;
+
+				if (bNewLebel)iLebelIndex++;
+			}
+			else
+			{
+				iImageTable[iRow][iCol] = 0;
+			}
+		}
+	}
+
+	//Relation
+	for (auto iLebelIndex : iRelationTable)
+	{
+		for (int iCol = 0; iCol < clsTempImage.cols; iCol++)
+		{
+			for (int iRow = 0; iRow < clsTempImage.rows; iRow++)
+			{
+				if (iImageTable[iRow][iCol] == iLebelIndex.first)
+				{
+					iImageTable[iRow][iCol] = iLebelIndex.second;
+				}
+			}
+		}
+	}
+
+	//Print
+	if (bPrint)
+	{
+		for (int iRow = 0; iRow < clsTempImage.rows; iRow++)
+		{
+			for (int iCol = 0; iCol < clsTempImage.cols; iCol++)
+			{
+				printf("%d ", iImageTable[iRow][iCol]);
+			}
+			printf("\n");
+		}
+	}
+
+	//Get Roi
+	int iGetRoiIndex = 1;
+
+	while (iGetRoiIndex <= iLebelIndex)
+	{
+		Rect clsRoi;
+		bool bLeftTop = true;
+		for (int iRow = 0; iRow < clsTempImage.rows; iRow++)
+		{
+			for (int iCol = 0; iCol < clsTempImage.cols; iCol++)
+			{
+				if (iImageTable[iRow][iCol] == iGetRoiIndex)
+				{
+					if (bLeftTop)
+					{
+						if (iCol != 0)
+							clsRoi.x = iCol - 1;
+						else
+							clsRoi.x = iCol;
+						if (iRow != 0)
+							clsRoi.y = iRow - 1;
+						else
+							clsRoi.y = iRow;
+
+						clsRoi.height = 2;
+						clsRoi.width = 2;
+					}
+					else
+					{
+						if (iRow - clsRoi.y + 1 < clsTempImage.rows)
+							clsRoi.height = iRow - clsRoi.y + 1;
+						else
+							clsRoi.height = iRow - clsRoi.y;
+
+						if (iCol - clsRoi.x + 1 < clsTempImage.cols)
+							clsRoi.width = iCol - clsRoi.x + 1;
+						else
+							clsRoi.width = 2;
+					}
+				}
+			}
+		}
+		if (clsRoi.height != 0 && clsRoi.width != 0)
+			clsRectsList.push_back(clsRoi);
+		iGetRoiIndex++;
+	}
+
+	//Clear array
+	for (int i = 0; i < clsTempImage.rows; i++)
+	{
+		delete[] iImageTable[i];
+	}
+	delete[] iImageTable;
 }

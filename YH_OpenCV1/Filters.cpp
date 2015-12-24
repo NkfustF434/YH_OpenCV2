@@ -65,9 +65,9 @@ void Filters::FilterProcess(Filters::FilterKind eFilterKind, Mat clsSouceImage, 
 
 void Filters::CustomFilterProcess(int iFilter[3][3], Mat clsSouceImage, Mat& clsTargetImage)
 {
-	for (int iCol = 1; iCol < clsSouceImage.cols - 1; iCol++)
+	for (int iRow = 1; iRow < clsSouceImage.rows - 1; iRow++)
 	{
-		for (int iRow = 1; iRow < clsSouceImage.rows - 1; iRow++)
+		for (int iCol = 1; iCol < clsSouceImage.cols - 1; iCol++)
 		{
 			int iGrayValueSum = 0;
 			int iWeightSum = 0;
@@ -92,9 +92,9 @@ void Filters::CustomFilterProcess(int iFilter[3][3], Mat clsSouceImage, Mat& cls
 
 void Filters::SortFilterProcess(GetType eGetType, Mat clsSouceImage, Mat& clsTargetImage)
 {
-	for (int iCol = 1; iCol < clsSouceImage.cols - 1; iCol++)
+	for (int iRow = 1; iRow < clsSouceImage.rows - 1; iRow++)
 	{
-		for (int iRow = 1; iRow < clsSouceImage.rows - 1; iRow++)
+		for (int iCol = 1; iCol < clsSouceImage.cols - 1; iCol++)
 		{
 			int iArray[9] = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 			int iIndex = 0;
@@ -132,11 +132,11 @@ void Filters::SortFilterProcess(GetType eGetType, Mat clsSouceImage, Mat& clsTar
 
 void Filters::AdaptMedianFilter(Mat clsSouceImage, Mat& clsTargetImage)
 {
-	for (int iCol = 1; iCol < clsSouceImage.cols - 1; iCol++)
+	for (int iRow = 1; iRow < clsSouceImage.rows - 1; iRow++)
 	{
-		for (int iRow = 1; iRow < clsSouceImage.rows - 1; iRow++)
+		for (int iCol = 1; iCol < clsSouceImage.cols - 1; iCol++)
 		{
-			int				iNewValue =0;
+			int				iNewValue = 0;
 			bool bAllowMaxSize = false;
 			std::vector<int> iValueList;
 			int iWindowLevel = 0;
@@ -157,7 +157,7 @@ void Filters::AdaptMedianFilter(Mat clsSouceImage, Mat& clsTargetImage)
 							bAllowMaxSize = true;
 
 						iValueList.push_back(clsSouceImage.at<unsigned char>(iRow + (iFilterRowIndex - 1), iCol + (iFilterColIndex - 1)));
-						
+
 					}
 				}
 
