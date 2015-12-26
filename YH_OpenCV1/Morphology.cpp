@@ -255,6 +255,7 @@ void Morphology::ConnectComponent(Mat clsSouceImage, std::vector<Rect>& clsRects
 
 						clsRoi.height = 2;
 						clsRoi.width = 2;
+						bLeftTop = false;
 					}
 					else
 					{

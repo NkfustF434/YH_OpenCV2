@@ -320,10 +320,10 @@ void main(){
 
 				imshow(""+i, imgPanel);
 
-				/*Mat temp = clsSouceImage.clone();
+				Mat temp = clsSouceImage.clone();
 				Mat srcROI = clsSouceImage(clsPointsList[i]);
-				temp.copyTo(srcROI);
-				imshow(""+i, srcROI);*/
+				//temp.copyTo(srcROI);
+				imshow("I"+i, srcROI);
 			}
 
 			clsThresholding.NomalThersholding(clsSouceImage, clsSouceImage, 127);
