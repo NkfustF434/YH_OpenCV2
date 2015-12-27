@@ -83,6 +83,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AdvanceMath.cpp" />
+    <ClCompile Include="DipHomework.cpp" />
     <ClCompile Include="DIPKernel\DIPKernel.cpp" />
     <ClCompile Include="Filters.cpp" />
     <ClCompile Include="Histogram.cpp" />
@@ -97,6 +98,7 @@
     <ClCompile Include="Thresholding.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="DipHomework.h" />
     <ClInclude Include="DIPKernel\DIPKernel.h" />
     <ClInclude Include="Filters.h" />
     <ClInclude Include="AdvanceMath.h" />

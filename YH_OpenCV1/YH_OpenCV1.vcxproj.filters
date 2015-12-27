@@ -54,6 +54,9 @@
     <ClCompile Include="Thresholding.cpp">
       <Filter>資源檔</Filter>
     </ClCompile>
+    <ClCompile Include="DipHomework.cpp">
+      <Filter>資源檔</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Filters.h">
@@ -90,6 +93,9 @@
       <Filter>標頭檔</Filter>
     </ClInclude>
     <ClInclude Include="Thresholding.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="DipHomework.h">
       <Filter>標頭檔</Filter>
     </ClInclude>
   </ItemGroup>

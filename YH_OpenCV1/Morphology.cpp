@@ -124,7 +124,7 @@ void Morphology::Closing(Mat clsSouceImage, Mat& clsTargetImage, int iKernel[9])
 	Erosion(clsTemp, clsTargetImage, iKernel);
 }
 
-void Morphology::ConnectComponent(Mat clsSouceImage, std::vector<Rect>& clsRectsList, bool bPrint)
+void Morphology::ConnectComponent(Mat clsSouceImage, std::vector<Rect>& clsRectsList, int iMinArea, bool bEightConnect, bool bPrint)
 {
 	Mat clsTempImage = clsSouceImage.clone();
 
@@ -142,6 +142,7 @@ void Morphology::ConnectComponent(Mat clsSouceImage, std::vector<Rect>& clsRects
 		clsThresholding.OtsusThersholding(clsSouceImage, clsTempImage);
 	}
 
+	//Initial label
 	std::map<int, int> iRelationTable;
 	int iLebelIndex = 1;
 	for (int iRow = 0; iRow < clsTempImage.rows; iRow++)
@@ -165,6 +166,10 @@ void Morphology::ConnectComponent(Mat clsSouceImage, std::vector<Rect>& clsRects
 							iMinLebel = iImageTable[iRow - 1][iCol];
 							bNewLebel = false;
 						}
+						else
+						{
+							iRelationTable[iImageTable[iRow - 1][iCol]] = iMinLebel;
+						}
 					}
 				}
 
@@ -175,19 +180,126 @@ void Morphology::ConnectComponent(Mat clsSouceImage, std::vector<Rect>& clsRects
 						bLeftRelation = true;
 						if (iImageTable[iRow][iCol - 1] < iMinLebel)
 						{
+							if (!bNewLebel)
+							{
+								//check key
+								if (iRelationTable.count(iMinLebel) != 0)
+								{
+									if (iRelationTable[iMinLebel]>iImageTable[iRow][iCol - 1])
+										iRelationTable[iMinLebel] = iImageTable[iRow][iCol - 1];
+								}
+								else
+								{
+									iRelationTable[iMinLebel] = iImageTable[iRow][iCol - 1];
+								}
+							}
 							iMinLebel = iImageTable[iRow][iCol - 1];
 							bNewLebel = false;
 						}
+						else
+						{
+							if (iMinLebel != iImageTable[iRow][iCol - 1])
+							{
+								//check key
+								if (iRelationTable.count(iMinLebel) != 0)
+								{
+									if (iRelationTable[iMinLebel] > iImageTable[iRow][iCol - 1])
+										iRelationTable[iMinLebel] = iImageTable[iRow][iCol - 1];
+								}
+								else
+								{
+									iRelationTable[iMinLebel] = iImageTable[iRow][iCol - 1];
+								}
+							}
+						}
 					}
-				}
 
-				//Check relation
-				if (bLeftRelation && bTopRelation)
-				{
-					if (iImageTable[iRow][iCol - 1] != iMinLebel)
-						iRelationTable[iImageTable[iRow][iCol - 1]] = iMinLebel;
-					else if (iImageTable[iRow - 1][iCol] != iMinLebel)
-						iRelationTable[iImageTable[iRow - 1][iCol]] = iMinLebel;
+					if (bEightConnect)
+					{
+						if (iRow != 0)
+						{
+							if (iImageTable[iRow - 1][iCol - 1] != 0)
+							{
+								bLeftRelation = true;
+								if (iImageTable[iRow - 1][iCol - 1] < iMinLebel)
+								{
+									if (!bNewLebel)
+									{
+										//check key
+										if (iRelationTable.count(iMinLebel) != 0)
+										{
+											if (iRelationTable[iMinLebel]>iImageTable[iRow - 1][iCol - 1])
+												iRelationTable[iMinLebel] = iImageTable[iRow - 1][iCol - 1];
+										}
+										else
+										{
+											iRelationTable[iMinLebel] = iImageTable[iRow - 1][iCol + 1];
+										}
+									}
+									iMinLebel = iImageTable[iRow - 1][iCol - 1];
+									bNewLebel = false;
+								}
+								else
+								{
+									if (iMinLebel != iImageTable[iRow - 1][iCol - 1])
+									{
+										//check key
+										if (iRelationTable.count(iMinLebel) != 0)
+										{
+											if (iRelationTable[iMinLebel] > iImageTable[iRow - 1][iCol - 1])
+												iRelationTable[iMinLebel] = iImageTable[iRow - 1][iCol - 1];
+										}
+										else
+										{
+											iRelationTable[iMinLebel] = iImageTable[iRow - 1][iCol + 1];
+										}
+									}
+								}
+							}
+
+							if (iCol < clsTempImage.cols - 1)
+							{
+								if (iImageTable[iRow - 1][iCol + 1] != 0)
+								{
+									bLeftRelation = true;
+									if (iImageTable[iRow - 1][iCol + 1] < iMinLebel)
+									{
+										if (!bNewLebel)
+										{
+											//check key
+											if (iRelationTable.count(iMinLebel) != 0)
+											{
+												if (iRelationTable[iMinLebel]>iImageTable[iRow - 1][iCol + 1])
+													iRelationTable[iMinLebel] = iImageTable[iRow - 1][iCol + 1];
+											}
+											else
+											{
+												iRelationTable[iMinLebel] = iImageTable[iRow - 1][iCol + 1];
+											}
+										}
+										iMinLebel = iImageTable[iRow - 1][iCol + 1];
+										bNewLebel = false;
+									}
+									else
+									{
+										if (iMinLebel != iImageTable[iRow - 1][iCol + 1])
+										{
+											//check key
+											if (iRelationTable.count(iMinLebel) != 0)
+											{
+												if (iRelationTable[iMinLebel] > iImageTable[iRow - 1][iCol + 1])
+													iRelationTable[iMinLebel] = iImageTable[iRow - 1][iCol + 1];
+											}
+											else
+											{
+												iRelationTable[iMinLebel] = iImageTable[iRow - 1][iCol + 1];
+											}
+										}
+									}
+								}
+							}
+						}
+					}
 				}
 
 				iImageTable[iRow][iCol] = iMinLebel;
@@ -198,7 +310,9 @@ void Morphology::ConnectComponent(Mat clsSouceImage, std::vector<Rect>& clsRects
 			{
 				iImageTable[iRow][iCol] = 0;
 			}
+			//printf("%d ", iImageTable[iRow][iCol]);
 		}
+		//printf("\n");
 	}
 
 	//Relation
@@ -234,6 +348,10 @@ void Morphology::ConnectComponent(Mat clsSouceImage, std::vector<Rect>& clsRects
 
 	while (iGetRoiIndex <= iLebelIndex)
 	{
+		int iLeftX = 9999999;
+		int iLeftY = 9999999;
+		int iBotX = 0;
+		int iBotY = 0;
 		Rect clsRoi;
 		bool bLeftTop = true;
 		for (int iRow = 0; iRow < clsTempImage.rows; iRow++)
@@ -242,38 +360,29 @@ void Morphology::ConnectComponent(Mat clsSouceImage, std::vector<Rect>& clsRects
 			{
 				if (iImageTable[iRow][iCol] == iGetRoiIndex)
 				{
-					if (bLeftTop)
-					{
-						if (iCol != 0)
-							clsRoi.x = iCol - 1;
-						else
-							clsRoi.x = iCol;
-						if (iRow != 0)
-							clsRoi.y = iRow - 1;
-						else
-							clsRoi.y = iRow;
 
-						clsRoi.height = 2;
-						clsRoi.width = 2;
-						bLeftTop = false;
-					}
-					else
-					{
-						if (iRow - clsRoi.y + 1 < clsTempImage.rows)
-							clsRoi.height = iRow - clsRoi.y + 1;
-						else
-							clsRoi.height = iRow - clsRoi.y;
+					if (iCol < iLeftX)
+						iLeftX = iCol;
+					if (iRow < iLeftY)
+						iLeftY = iRow;
 
-						if (iCol - clsRoi.x + 1 < clsTempImage.cols)
-							clsRoi.width = iCol - clsRoi.x + 1;
-						else
-							clsRoi.width = 2;
-					}
+					if (iCol > iBotX)
+						iBotX = iCol;
+					if (iRow > iBotY)
+						iBotY = iRow;
 				}
 			}
 		}
-		if (clsRoi.height != 0 && clsRoi.width != 0)
-			clsRectsList.push_back(clsRoi);
+
+		clsRoi.x = iLeftX;
+		clsRoi.y = iLeftY;
+		clsRoi.width = iBotX - iLeftX;
+		clsRoi.height = iBotY - iLeftY;
+		if (clsRoi.height > 0 && clsRoi.width > 0)
+		{
+			if (clsRoi.width*clsRoi.height > iMinArea)
+				clsRectsList.push_back(clsRoi);
+		}
 		iGetRoiIndex++;
 	}
 
