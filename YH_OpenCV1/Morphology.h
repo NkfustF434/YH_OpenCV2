@@ -18,6 +18,8 @@ public:
 	void Closing(Mat clsSouceImage, Mat& clsTargetImage, int iKernel[9] = NULL);
 
 	void ConnectComponent(Mat clsSouceImage, std::vector<Rect>& clsRectsList, int iMinArea = 0, bool bEightConnect = false, bool bPrint = false);
+
+	void ConnectComponent2(Mat clsSouceImage, std::vector<Rect>& clsRectsList, int iMinArea = 0, bool bEightConnect = false, bool bPrint = false);
 };
 
 #endif

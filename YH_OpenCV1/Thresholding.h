@@ -13,6 +13,8 @@ public:
 	void NomalThersholding(Mat clsSouceImage, Mat& clsTargetImage, int iThersholding);
 
 	void OtsusThersholding(Mat clsSouceImage, Mat& clsTargetImage);
+	
+	void Negative(Mat clsSouceImage, Mat& clsTargetImage);
 };
 
 #endif

@@ -26,8 +26,8 @@ void Thresholding::OtsusThersholding(Mat clsSouceImage, Mat& clsTargetImage)
 	int iLeftCount = 0;
 	float fMean1 = 0;
 	float fMean2 = 0;
+	int iFinalT = 0;
 	int iMaxVarence = 0;
-
 	//compute histogram
 	Histogram clsHistogram;
 	std::array<int, 256> iHistogramData;
@@ -59,17 +59,42 @@ void Thresholding::OtsusThersholding(Mat clsSouceImage, Mat& clsTargetImage)
 		fVaranceArray[iT] = fQ1*fQ2* std::abs(fMean1 - fMean2);
 		if (fVaranceArray[iT] > iMaxVarence)
 			iMaxVarence = fVaranceArray[iT];
-		
+
 		if (iT != 0)
 		{
 			if (fVaranceArray[iT] - fVaranceArray[iT - 1] < 0)
+			{
+				iFinalT = iT;
 				break;
+			}
 		}
 		iLeftCount += iHistogramData[iT];
 		//printf("%f \n", fVaranceArray[iT]);
 	}
 
 	//Thresholding
-	NomalThersholding(clsSouceImage, clsTempImage, iMaxVarence);
+	NomalThersholding(clsSouceImage, clsTempImage, iFinalT);
+	printf("Otsu: %d\n", iFinalT);
+	clsTargetImage = clsTempImage.clone();
+}
+
+void Thresholding::Negative(Mat clsSouceImage, Mat& clsTargetImage)
+{
+	Mat clsTempImage = clsSouceImage.clone();
+	for (int iCol = 0; iCol < clsSouceImage.cols; iCol++)
+	{
+		for (int iRow = 0; iRow < clsSouceImage.rows; iRow++)
+		{
+			if (clsSouceImage.at<unsigned char>(iRow, iCol) == 255)
+			{
+				clsTempImage.at<unsigned char>(iRow, iCol) = 0;
+			}
+			else
+			{
+				clsTempImage.at<unsigned char>(iRow, iCol) = 255;
+			}
+		}
+	}
+
 	clsTargetImage = clsTempImage.clone();
 }

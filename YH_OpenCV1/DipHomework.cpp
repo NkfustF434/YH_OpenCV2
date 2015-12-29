@@ -304,33 +304,20 @@ void DipHomework::Threshold()
 
 void DipHomework::ConnectCompronent()
 {
-	Mat clsSouceImage = LoadImage(true, "Select SouceImage", true);
-
+	Mat clsSouceImage = imread("BlackWhitePanel.bmp", cv::IMREAD_GRAYSCALE);
+	Mat clsTempImage = clsSouceImage.clone();
 	Thresholding clsThresholding;
 	Morphology clsMorphology;
 	std::vector<Rect> clsRectsList;
-	clsThresholding.NomalThersholding(clsSouceImage, clsSouceImage, 128);
-	clsMorphology.Erosion(clsSouceImage, clsSouceImage);
-	clsMorphology.Erosion(clsSouceImage, clsSouceImage);
-	clsMorphology.Erosion(clsSouceImage, clsSouceImage);
-	clsMorphology.Dilation(clsSouceImage, clsSouceImage);
-	clsMorphology.Dilation(clsSouceImage, clsSouceImage);
-	clsMorphology.Dilation(clsSouceImage, clsSouceImage);
-	clsMorphology.ConnectComponent(clsSouceImage, clsRectsList, 90, false, false);
-	printf("%d block", clsRectsList.size());
-	for (int i = 0; i < clsRectsList.size(); i++)
-	{
-		std::stringstream stringstream;
-		stringstream << static_cast<int>(i);
-		Mat srcROI = clsSouceImage(clsRectsList[i]);
-		imshow("Roi" + stringstream.str(), srcROI);
-	}
-
+	clsThresholding.OtsusThersholding(clsSouceImage, clsSouceImage);	
+	clsMorphology.ConnectComponent(clsSouceImage, clsRectsList, 0, false,true);
+	
 	imshow("SouceImage", clsSouceImage);
 }
 
 void DipHomework::HwMain(){
 
+	ConnectCompronent();/*
 	int iSelectIndex = 0;
 	do
 	{
@@ -378,5 +365,5 @@ void DipHomework::HwMain(){
 			ConnectCompronent();
 			break;
 		}
-	} while (true);
+	} while (true);*/
 }
